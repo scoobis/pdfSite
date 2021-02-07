@@ -4,14 +4,19 @@ const { join } = require('path')
 const session = require('express-session')
 const morgan = require('morgan')
 const helmet = require('helmet')
+const mongoose = require('./configs/mongoose.js')
 require('dotenv').config()
 
 const app = express()
 
-const port = process.env.PORT || 3000
-
 app.use(helmet())
 app.use(morgan('common'))
+
+// Connect to the database.
+mongoose.connect().catch((error) => {
+  console.error(error)
+  process.exit(1)
+})
 
 app.engine(
   'hbs',
@@ -51,7 +56,16 @@ app.use((req, res, next) => {
 
 /* ROUTES */
 app.use('/', require('./routes/indexRouter'))
+app.use('/register', require('./routes/registerRouter'))
 
+// NOT FOUND
+app.use((req, res, next) => {
+  const err = new Error('Not Found')
+  err.status = 404
+  next(err)
+})
+
+const port = process.env.PORT || 3000
 app.listen(port, () => {
   console.log(`Server started on http://localhost:${port}`)
 })
