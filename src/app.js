@@ -50,6 +50,7 @@ app.use((req, res, next) => {
 })
 
 /* ROUTES */
+app.use('/', require('./routes/indexRouter'))
 
 app.listen(port, () => {
   console.log(`Server started on http://localhost:${port}`)
